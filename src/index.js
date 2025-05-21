@@ -1,6 +1,6 @@
 // require('dotenv').config() there is no issue, but it's not recommended to use it in the code
 import dotenv from "dotenv";
-import connectDB from "./db";
+import connectDB from "./db/index.js";
 
 dotenv.config({
     path: './env'
