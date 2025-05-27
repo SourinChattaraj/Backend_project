@@ -1,10 +1,11 @@
 // using promise to handle async errors in express
-const asyncHandler=(requestHandler)=>{
-    (req,res,next)=>{
-        Promise.resolve(requestHandler(req,res,next))
-        .catch((error)=>next(error));
-    }
-}
+const asyncHandler = (requestHandler) => {
+  return (req, res, next) => {
+    Promise
+      .resolve(requestHandler(req, res, next))
+      .catch((error) => next(error));
+  };
+};
 export default asyncHandler;
 
 // using try-catch
