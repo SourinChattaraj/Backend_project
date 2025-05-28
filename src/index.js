@@ -1,10 +1,12 @@
 // require('dotenv').config() there is no issue, but it's not recommended to use it in the code
 import dotenv from "dotenv";
+import app from "./app.js";
 import connectDB from "./db/index.js";
 
 dotenv.config({
     path: './env'
 })
+
 connectDB() // connectDB is a function that connects to the database
 .then(()=>{
     app.listen(process.env.PORT || 5000,()=>{
