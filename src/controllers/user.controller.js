@@ -18,6 +18,10 @@ const registerUser = asyncHandler(async(req, res )=>{
     // get detils from frontend
     const {fullname, username, email, password} = req.body
 
+    // req.body came from frontend
+    // req.files came from multer middleware
+
+
     // validation
     // if(fullname == ""){
     //     throw new ApiError(400, "Fullname is required")
@@ -52,7 +56,11 @@ const registerUser = asyncHandler(async(req, res )=>{
 
     // check for avatar and cover image
     const avatarLocalPath = req.files?.avatar[0]?.path
-    const coverLocalPath = req.files?.coverImage[0]?.path
+    // const coverLocalPath = req.files?.coverImage[0]?.path
+    let coverLocalPath
+    if(req.files && Array.isArray(req.files.coverImage)&& req.files.coverImage.length > 0){
+        coverLocalPath=req.files.coverImage[0].path
+    }
     if(!avatarLocalPath){
         throw new ApiError(400, " Avatar is required")
     }
@@ -85,7 +93,7 @@ const registerUser = asyncHandler(async(req, res )=>{
         throw new ApiError(500, "something went wrong, userr not created")
     }
     // return response to frontend
-
+ 
     return res.status(201).json(
         new ApiResponse(201, createdUser, "user Registered successfully")
     )
