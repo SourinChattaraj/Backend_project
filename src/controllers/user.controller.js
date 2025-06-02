@@ -1,7 +1,6 @@
 import asyncHandler from "../utils/asynHandler.js";
 import ApiError from "../utils/apiError.js";
 import { User } from "../models/user.model.js";
-import { upload } from "../middleware/multer.middleware.js";
 import { uploadOnCloudinary } from "../utils/cloudnary.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 const registerUser = asyncHandler(async(req, res )=>{
@@ -18,7 +17,6 @@ const registerUser = asyncHandler(async(req, res )=>{
 
     // get detils from frontend
     const {fullname, username, email, password} = req.body
-    console.log("fullname : ",fullname)
 
     // validation
     // if(fullname == ""){
