@@ -10,12 +10,10 @@ export const deleteOldCloudinary = async (imageURL) => {
     const publicId = fileWithExt.split('.')[0];
 
     const result = await cloudinary.uploader.destroy(publicId);
-    // console.log("Cloudinary delete result:", result);
     
     if (result.result === 'ok') {
       return true;
     } else {
-      console.warn('Cloudinary delete result:', result);
       return false;
     }
   } catch (error) {

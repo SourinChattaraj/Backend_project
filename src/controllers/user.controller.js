@@ -100,7 +100,7 @@ const registerUser = asyncHandler(async(req, res )=>{
    const user = await User.create({
         fullname,
         username: username.toLowerCase(),
-        email,
+        email: email.toLowerCase(),
         password,
         avatar: avatar.url,
         coverImage: coverImage?.url || "",
@@ -315,17 +315,6 @@ const updateUserAvatar = asyncHandler(async(req, res)=>{
     if(!avatar.url){
         throw new ApiError(500, "Failed to upload avatar to cloudinary")
     }
-
-    // const user = await User.findByIdAndUpdate(req.user?._id,
-    //     {
-    //         $set:{
-    //             avatar: avatar.url,
-    //         },
-    //     },
-    //     {
-    //         new: true, // return the updated user
-    //     }
-    // ).select("-password")
     user.avatar = avatar.url
     await user.save({ validateBeforeSave: false })
     return res
@@ -335,28 +324,23 @@ const updateUserAvatar = asyncHandler(async(req, res)=>{
 
 const updateUserCover = asyncHandler(async(req, res)=>{
     const coverLocalPath = req.file?.path
-
     if(!coverLocalPath){
-        throw new ApiError(400, "cover file is missing")
+        throw new ApiError(400, "Cover file is missing")
     }
-    const cover = await uploadOnCloudinary(coverLocalPath)
-    if(!cover.url){
-        throw new ApiError(500, "Failed to upload cover to cloudinary")
+    const user = await User.findById(req.user?._id)
+    if(!user){
+        throw new ApiError(404, "User not found")
     }
-
-    const user = await User.findByIdAndUpdate(req.user?._id,
-        {
-            $set:{
-                coverImage: cover.url,
-            },
-        },
-        {
-            new: true, // return the updated user
-        }
-    ).select("-password")
+    const isdeleted = await deleteOldCloudinary(user.coverImage)
+    const coverImage = await uploadOnCloudinary(coverLocalPath)
+    if(!coverImage.url){
+        throw new ApiError(500, "Failed to upload cover image to cloudinary")
+    }
+    user.coverImage = coverImage.url
+    await user.save({ validateBeforeSave: false })
     return res
     .status(200)
-    .json(new ApiResponse(200, user, "cover image updated successfully"))
+    .json(new ApiResponse(200, user, "Cover Image updated successfully"))
 })
 
 export {
