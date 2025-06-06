@@ -343,6 +343,72 @@ const updateUserCover = asyncHandler(async(req, res)=>{
     .json(new ApiResponse(200, user, "Cover Image updated successfully"))
 })
 
+const  getUserChannelProfile = asyncHandler(async(req, res)=>{
+    const { username } = req.params
+    if(!username?.trim()){
+        throw new ApiError(400, "Username is required")
+    }
+    const channel = await User.aggregate([
+        {
+            $match: {
+                username: username?.toLowerCase()//its fetch the username from the database
+            }
+        },
+        {
+            $lookup:{
+                from: "subscriptions",//from the subscription model
+                localField: "_id",//local field is the _id of the user/channel
+                foreignField: "channel",//foreign field is the channel in the subscription model(maily when a user subcribe a channel then a doc is creted where one feild is channel and one field is subscriber. In the user, the user id is stored like id field and in the channel the the channel id is stored maily the user id of the channel)
+                as: "subscribers"
+            }
+        },
+        {
+            $lookup:{
+                from: "subscriptions",
+                localField: "_id",
+                foreignField: "subsciber",
+                as: "subscribedTo"
+            }
+        },
+        {
+            $addFields:{//use to add ne fields to the document
+                //size is used to get the length of the array
+                subcribersCount:{
+                    $size: "$subscribers"
+                },
+                subscribedToCount:{
+                    $size: "$subscribedTo"
+                },
+                isSubscribed:{
+                    $cond:{
+                        if:{$in: [req.user?._id, "$subscribers.subsciber"]},//if the user id is present in the subscribers array then it will return true else false
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $project:{
+                fullname: 1,
+                username: 1,
+                avatar: 1,
+                coverImage: 1,
+                subcribersCount: 1,
+                subscribedToCount: 1,
+                isSubscribed: 1
+            }
+        }
+    ])
+
+   if(!channel?.length){
+        throw new ApiError(404, "Channel not found")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, channel[0], "Channel profile fetched successfully"))
+})
+
 export {
      registerUser,
      loginUser,
@@ -353,5 +419,6 @@ export {
      updateAccountDetails,
      updateUserAvatar,
      updateUserCover,
+     getUserChannelProfile
      } ;
-// This is a controller function for registering a user.
+
