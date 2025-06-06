@@ -322,7 +322,7 @@ const updateUserAvatar = asyncHandler(async(req, res)=>{
     .status(200)
     .json(new ApiResponse(200, user, "Avatar updated successfully"))
 })
-
+//check this
 const updateUserCover = asyncHandler(async(req, res)=>{
     const coverLocalPath = req.file?.path
     if(!coverLocalPath){
@@ -332,7 +332,7 @@ const updateUserCover = asyncHandler(async(req, res)=>{
     if(!user){
         throw new ApiError(404, "User not found")
     }
-    const isdeleted = await deleteOldCloudinary(user.coverImage)
+    await deleteOldCloudinary(user.coverImage)
     const coverImage = await uploadOnCloudinary(coverLocalPath)
     if(!coverImage.url){
         throw new ApiError(500, "Failed to upload cover image to cloudinary")
