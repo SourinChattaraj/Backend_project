@@ -322,7 +322,7 @@ const updateUserAvatar = asyncHandler(async(req, res)=>{
     .status(200)
     .json(new ApiResponse(200, user, "Avatar updated successfully"))
 })
-
+ 
 const updateUserCover = asyncHandler(async(req, res)=>{
     const coverLocalPath = req.file?.path
     if(!coverLocalPath){
