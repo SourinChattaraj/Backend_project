@@ -5,12 +5,9 @@ const playlistSchema = new Schema({
         type:String,
         required: true,
         unique: true,
-        index: true,
     },
      description:{
         type:String,
-        unique: true,
-        index: true,
     },
 
     owner:{
